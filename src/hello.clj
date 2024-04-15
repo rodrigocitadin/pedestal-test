@@ -3,7 +3,7 @@
             [io.pedestal.http.route :as route]))
 
 (defn respond-hello [request]
-  {:status 200 :body "Hello, world!"})
+  {:status 200 :body request})
 
 (def routes
   (route/expand-routes
