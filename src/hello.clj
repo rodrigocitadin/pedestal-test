@@ -2,12 +2,18 @@
   (:require [io.pedestal.http :as http]
             [io.pedestal.http.route :as route]))
 
+(defn ok [body]
+  {:status 200 :body body})
+
+(defn greeting-for [nm]
+  (if (empty? nm)
+    "Hello, world!\n"
+    (str "Hello, " nm "\n")))
+
 (defn respond-hello [request]
   (let [nm (get-in request [:query-params :name])
-        resp (if (empty? nm)
-               "Hello, world!\n"
-               (str "Hello, " nm "\n"))]
-    {:status 200 :body resp}))
+        resp (greeting-for nm)]
+    (ok resp)))
 
 (def routes
   (route/expand-routes
