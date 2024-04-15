@@ -58,9 +58,9 @@
   {:name ::coerce-body
    :leave
    (fn [context]
-     (if (get-in context [:response :headers "Content-Type"])
-       context
-       (update-in context [:response] coerce-to (accepted-type context))))})
+     (cond-> context
+       (nil? (get-in context [:response :headers "Content-Type"]))
+       (update-in [:response] coerce-to (accepted-type context))))})
 
 (def routes
   (route/expand-routes
