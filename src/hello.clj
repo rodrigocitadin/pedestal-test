@@ -46,8 +46,8 @@
   {:name ::coerce-body
    :leave
    (fn [context]
-     (let [accepted (get-in context [:request :acceptor :field] "text/plain")
-           response (get context :reponse)
+     (let [accepted (get-in context [:request :accept :field] "text/plain")
+           response (get context :response)
            body (get response :body)
            coerced-body (case accepted
                           "text/html" body
