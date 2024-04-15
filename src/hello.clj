@@ -42,9 +42,29 @@
 (def content-negotiation-interceptor
   (content-negotiation/negotiate-content supported-types))
 
+(def coerce-body-interceptor
+  {:name ::coerce-body
+   :leave
+   (fn [context]
+     (let [accepted (get-in context [:request :acceptor :field] "text/plain")
+           response (get context :reponse)
+           body (get response :body)
+           coerced-body (case accepted
+                          "text/html" body
+                          "text/plain" body
+                          "application/edn" (pr-str body)
+                          "application/json" (json/write-str body))
+           updated-response (assoc response
+                                   :headers {"Content-Type" accepted}
+                                   :body coerced-body)]
+       (assoc context :response updated-response)))})
+
 (def routes
   (route/expand-routes
-   #{["/greet" :get [content-negotiation-interceptor respond-hello] :route-name :greet]
+   #{["/greet" :get [coerce-body-interceptor
+                     content-negotiation-interceptor
+                     respond-hello]
+      :route-name :greet]
      ["/echo" :get echo]}))
 
 (def service-map
